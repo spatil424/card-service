@@ -13,9 +13,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sumeet.card.constants.CardsConstants;
 import org.sumeet.card.dto.CardsContactInfoDto;
 import org.sumeet.card.dto.CardsDto;
@@ -41,6 +46,7 @@ import jakarta.validation.constraints.Pattern;
 @Validated
 public class CardsController {
 
+	private static final Logger logger = LoggerFactory.getLogger(CardsController.class);
     private final ICardsService iCardsService;
     private final Environment environment;
 
@@ -49,7 +55,8 @@ public class CardsController {
 
     private final CardsContactInfoDto cardsContactInfoDto;
 
-    @Autowired
+
+	@Autowired
     public CardsController(ICardsService iCardsService, Environment environment,CardsContactInfoDto cardsContactInfoDto) {
         this.iCardsService = iCardsService;
         this.environment = environment;
@@ -102,11 +109,14 @@ public class CardsController {
                     )
             )
     })
-    @GetMapping("/fetch")
-    public ResponseEntity<CardsDto> fetchCardDetails(@RequestParam
+    @GetMapping(value = "/fetch", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CardsDto> fetchCardDetails(@RequestHeader("demobank-correlation-id")
+													 String correlationId,
+			                                         @RequestParam
                                                      @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
                                                      String mobileNumber) {
-        CardsDto cardsDto = iCardsService.fetchCard(mobileNumber);
+		logger.debug("demoBank-correlation-id found: {} ", correlationId);
+        CardsDto cardsDto = iCardsService.fetchCard(mobileNumber,correlationId);
         return ResponseEntity.status(HttpStatus.OK).body(cardsDto);
     }
 

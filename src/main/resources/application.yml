@@ -2,16 +2,16 @@ spring:
   application:
     name: cards-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/accountsdb
-    username: postgres
+    url: jdbc:h2:mem:accountsdb
+    username: sa
     password: test
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.h2.Driver
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.H2Dialect
   profiles:
     active: "prod"
   config:
@@ -23,10 +23,10 @@ spring:
 #    password: guest
 
 management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: "*"
+  endpoints:
+    web:
+      exposure:
+        include: "*"
   endpoint:
     shutdown:
       access: unrestricted
@@ -72,3 +72,8 @@ info:
     contact:
       name: "Dragos Lech"
       email: "dragos@demobank.com"
+
+logging:
+  level:
+    org.sumeet: DEBUG
+    org.springframework.cloud.gateway: INFO

@@ -2,6 +2,9 @@ package org.sumeet.card.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sumeet.card.constants.CardsConstants;
 import org.sumeet.card.dto.CardsDto;
 import org.sumeet.card.entity.Cards;
@@ -18,6 +21,7 @@ import java.util.Random;
 @AllArgsConstructor
 public class CardsServiceImpl implements ICardsService {
 
+	private static final Logger logger = LoggerFactory.getLogger(CardsServiceImpl.class);
     private CardsRepository cardsRepository;
 
     /**
@@ -49,13 +53,15 @@ public class CardsServiceImpl implements ICardsService {
     }
 
     /**
-     *
-     * @param mobileNumber - Input mobile Number
-     * @return Card Details based on a given mobileNumber
-     */
+	 *
+	 * @param mobileNumber  - Input mobile Number
+	 * @param correlationId
+	 * @return Card Details based on a given mobileNumber
+	 */
     @Override
-    public CardsDto fetchCard(String mobileNumber) {
-        Cards cards = cardsRepository.findByMobileNumber(mobileNumber).orElseThrow(
+    public CardsDto fetchCard(String mobileNumber, String correlationId) {
+        logger.debug("Logging correlationId got from other ms {}",correlationId);
+		Cards cards = cardsRepository.findByMobileNumber(mobileNumber).orElseThrow(
                 () -> new ResourceNotFoundException("Card", "mobileNumber", mobileNumber)
         );
         return CardsMapper.mapToCardsDto(cards, new CardsDto());
