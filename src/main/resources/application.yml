@@ -2,25 +2,25 @@ spring:
   application:
     name: cards-service
   datasource:
-    url: jdbc:postgresql://postgresdb:5432/accountsdb
-    username: postgres
-    password: admin
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:mem:accountsdb
+    username: sa
+    password: test
+    driver-class-name: org.h2.Driver
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.H2Dialect
   profiles:
     active: "prod"
   config:
-    import: "configserver:http://configServer:8071"
-  rabbitmq:
-    host: rabbitmq
-    port: 5672
-    username: guest
-    password: guest
+    import: "optional:configserver:http://localhost:8071"
+#  rabbitmq:
+#    host: rabbitmq
+#    port: 5672
+#    username: guest
+#    password: guest
 
 management:
   endpoints:
@@ -28,6 +28,11 @@ management:
       exposure:
         include: "*"
   endpoint:
+    shutdown:
+      access: unrestricted
+    info:
+      env:
+        enabled: true
     health:
       readinessState:
         enabled: true
@@ -49,3 +54,26 @@ cards:
   onCallSupport:
     - (412) 419-3491
     - (915) 382-1932
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+       defaultZone: http://localhost:8761/eureka/
+
+info:
+  app:
+    description: "Cards Service for DemoBank"
+    version: "3.0.0"
+    termsOfService: "http://demobank.com/terms"
+    contact:
+      name: "Dragos Lech"
+      email: "dragos@demobank.com"
+
+logging:
+  level:
+    org.sumeet: DEBUG
+    org.springframework.cloud.gateway: INFO
